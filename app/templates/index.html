@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Server & Chat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>File Server & Chat</h1>
+    
+    <div class="container">
+        <div class="file-section">
+            <h2>Upload File</h2>
+            <form method="post" enctype="multipart/form-data" action="{{ url_for('files.upload_file') }}">
+                <input type="file" name="file">
+                <input type="submit" value="Upload">
+            </form>
+            
+            <h2>Available Files</h2>
+            <ul>
+                {% for file in files %}
+                    <li><a href="{{ url_for('files.download_file', filename=file) }}">{{ file }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        <div class="chat-section">
+            <h2>Chat</h2>
+            <div class="chat-box" id="chatBox"></div>
+            <div class="chat-input">
+                <input type="text" id="username" placeholder="Your Name" style="width: 150px;">
+                <input type="text" id="messageInput" placeholder="Type your message...">
+                <button id="sendButton">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+</body>
+</html> 

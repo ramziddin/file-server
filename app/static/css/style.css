@@ -1,0 +1,145 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    line-height: 1.6;
+}
+
+h1, h2 {
+    color: #333;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin: 10px 0;
+}
+
+.container {
+    display: flex;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.file-section,
+.chat-section {
+    flex: 1;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chat-box {
+    height: 300px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    overflow-y: scroll;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+}
+
+.message {
+    margin-bottom: 8px;
+    padding: 8px;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.message .user {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.message .time {
+    color: #888;
+    font-size: 0.8em;
+    margin-left: 5px;
+}
+
+.chat-input {
+    display: flex;
+    margin-top: 10px;
+    gap: 5px;
+}
+
+.chat-input input[type="text"] {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.chat-input button {
+    padding: 8px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.chat-input button:hover {
+    background-color: #45a049;
+}
+
+.copy-btn {
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 3px;
+    padding: 2px 5px;
+    margin-left: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #555;
+    transition: all 0.2s;
+}
+
+.copy-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.msg-content {
+    display: inline;
+}
+
+/* Form styles */
+form {
+    margin-bottom: 20px;
+}
+
+input[type="file"] {
+    margin-bottom: 10px;
+}
+
+input[type="submit"] {
+    padding: 8px 15px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+input[type="submit"]:hover {
+    background-color: #1976D2;
+}
+
+/* File list styles */
+.file-section ul li a {
+    color: #2196F3;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.file-section ul li a:hover {
+    color: #1976D2;
+    text-decoration: underline;
+} 
