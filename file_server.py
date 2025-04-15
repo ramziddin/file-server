@@ -57,6 +57,22 @@ HTML_TEMPLATE = '''
             border: none;
             cursor: pointer;
         }
+        .copy-btn {
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 3px;
+            padding: 2px 5px;
+            margin-left: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #555;
+        }
+        .copy-btn:hover {
+            background-color: #e0e0e0;
+        }
+        .msg-content {
+            display: inline;
+        }
     </style>
 </head>
 <body>
@@ -101,16 +117,45 @@ HTML_TEMPLATE = '''
                     data.forEach(msg => {
                         const messageDiv = document.createElement('div');
                         messageDiv.className = 'message';
+                        
+                        // Create message content span for easy copying
+                        const messageContent = msg.text;
+                        
                         messageDiv.innerHTML = `
                             <span class="user">${msg.username}:</span> 
-                            ${msg.text}
+                            <span class="msg-content">${messageContent}</span>
                             <span class="time">${msg.timestamp}</span>
+                            <button class="copy-btn" onclick="copyMessage(this)" data-message="${encodeURIComponent(messageContent)}">Copy</button>
                         `;
                         chatBox.appendChild(messageDiv);
                     });
                     
                     // Scroll to bottom
                     chatBox.scrollTop = chatBox.scrollHeight;
+                });
+        }
+        
+        // Function to copy message text to clipboard
+        function copyMessage(button) {
+            const messageText = decodeURIComponent(button.getAttribute('data-message'));
+            navigator.clipboard.writeText(messageText)
+                .then(() => {
+                    // Visual feedback
+                    const originalText = button.textContent;
+                    button.textContent = "Copied!";
+                    button.style.backgroundColor = "#4CAF50";
+                    button.style.color = "white";
+                    
+                    // Reset button after 1.5 seconds
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.backgroundColor = "";
+                        button.style.color = "";
+                    }, 1500);
+                })
+                .catch(err => {
+                    console.error('Could not copy text: ', err);
+                    alert('Failed to copy to clipboard');
                 });
         }
         
