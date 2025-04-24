@@ -49,11 +49,14 @@ li {
     background: #fff;
     border-radius: 4px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    word-wrap: break-word;
 }
 
 .message .user {
     font-weight: bold;
     color: #2c3e50;
+    display: inline-block;
+    margin-right: 5px;
 }
 
 .message .time {
@@ -106,7 +109,11 @@ li {
 }
 
 .msg-content {
-    display: inline;
+    display: inline-block;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-width: 100%;
+    padding: 2px 0;
 }
 
 /* Form styles */
@@ -142,4 +149,16 @@ input[type="submit"]:hover {
 .file-section ul li a:hover {
     color: #1976D2;
     text-decoration: underline;
+}
+
+/* Textarea styles for multiline input */
+.chat-input textarea {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-height: 60px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: inherit;
 } 

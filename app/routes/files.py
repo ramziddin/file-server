@@ -24,3 +24,8 @@ def upload_file():
         return {'error': 'File type not allowed'}, 400
         
     return {'message': 'File uploaded successfully', 'filename': filename} 
+@bp.route('/download/<filename>')
+def download_file(filename):
+    """Download a file."""
+    file_path = get_file_path(filename)
+    return send_file(file_path, as_attachment=True, download_name=filename)

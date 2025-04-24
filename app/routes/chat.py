@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, Response, stream_with_context, json
 from app.utils.chat_helpers import chat_manager
 
 bp = Blueprint('chat', __name__, url_prefix='/chat')
@@ -19,4 +19,32 @@ def send_message():
 @bp.route('/messages', methods=['GET'])
 def get_messages():
     """Get all chat messages."""
-    return jsonify(chat_manager.get_messages()) 
+    return jsonify(chat_manager.get_messages())
+
+@bp.route('/stream')
+def stream():
+    """SSE endpoint for streaming chat messages."""
+    def generate():
+        client_queue = chat_manager.add_client()
+        try:
+            # Send initial messages
+            messages = chat_manager.get_messages()
+            if messages:
+                yield f"data: {json.dumps(messages)}\n\n"
+            
+            while True:
+                message = client_queue.get()
+                if message:
+                    yield f"data: {json.dumps([message])}\n\n"
+        finally:
+            chat_manager.remove_client(client_queue)
+
+    return Response(
+        stream_with_context(generate()),
+        mimetype='text/event-stream',
+        headers={
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+            'X-Accel-Buffering': 'no'  # Disable buffering for nginx
+        }
+    ) 
