@@ -78,25 +78,52 @@ function updateChatBox(messages) {
 // Function to copy message text to clipboard
 function copyMessage(button) {
     const messageText = decodeURIComponent(button.getAttribute('data-message'));
-    navigator.clipboard.writeText(messageText)
-        .then(() => {
-            // Visual feedback
-            const originalText = button.textContent;
-            button.textContent = "Copied!";
-            button.style.backgroundColor = "#4CAF50";
-            button.style.color = "white";
-            
-            // Reset button after 1.5 seconds
-            setTimeout(() => {
-                button.textContent = originalText;
-                button.style.backgroundColor = "";
-                button.style.color = "";
-            }, 1500);
-        })
-        .catch(err => {
-            console.error('Could not copy text: ', err);
-            alert('Failed to copy to clipboard');
-        });
+    
+    // Create a temporary textarea element
+    const textarea = document.createElement('textarea');
+    textarea.value = messageText;
+    
+    // Make the textarea out of viewport
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-999999px';
+    textarea.style.top = '-999999px';
+    document.body.appendChild(textarea);
+    
+    // Focus and select the text
+    textarea.focus();
+    textarea.select();
+    
+    // Execute copy command
+    let success = false;
+    try {
+        success = document.execCommand('copy');
+    } catch (err) {
+        console.error('Fallback: Oops, unable to copy', err);
+    }
+    
+    // Remove the temporary textarea
+    document.body.removeChild(textarea);
+    
+    // Visual feedback
+    const originalText = button.textContent;
+    button.textContent = success ? "Copied!" : "Failed to copy";
+    button.style.backgroundColor = success ? "#4CAF50" : "#f44336";
+    button.style.color = "white";
+    
+    // Reset button after 1.5 seconds
+    setTimeout(() => {
+        button.textContent = originalText;
+        button.style.backgroundColor = "";
+        button.style.color = "";
+    }, 1500);
+    
+    // If the modern clipboard API is available, try that as well
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(messageText)
+            .catch(err => {
+                console.error('Could not copy text: ', err);
+            });
+    }
 }
 
 // Send message function
