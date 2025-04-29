@@ -25,6 +25,15 @@
         
         <div class="chat-section">
             <h2>Chat</h2>
+            <div class="chat-controls">
+                <div class="connection-toggle">
+                    <label for="connection-type">Connection Type:</label>
+                    <select id="connection-type">
+                        <option value="sse">Server-Sent Events (SSE)</option>
+                        <option value="polling">Long Polling</option>
+                    </select>
+                </div>
+            </div>
             <div class="chat-box" id="chatBox"></div>
             <div class="chat-input">
                 <input type="text" id="username" placeholder="Your Name" style="width: 150px;">

@@ -25,6 +25,7 @@ class ChatManager:
             self.messages.pop(0)
             
         # Notify all clients about the new message
+        print(f"Notifying {len(self.clients)} clients about new message from {message['username']}")
         self._notify_clients(message)
         return True
 
@@ -45,10 +46,15 @@ class ChatManager:
     def _notify_clients(self, message):
         """Notify all clients about a new message."""
         dead_clients = set()
+        
+        # Log the message length for debugging
+        print(f"Notifying clients about message with length {len(message['text'])}")
+        
         for client_queue in self.clients:
             try:
                 client_queue.put_nowait(message)
-            except:
+            except Exception as e:
+                print(f"Error notifying client: {e}")
                 dead_clients.add(client_queue)
         
         # Remove dead clients

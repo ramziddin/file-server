@@ -50,6 +50,8 @@ li {
     border-radius: 4px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     word-wrap: break-word;
+    max-width: 100%;
+    overflow-wrap: break-word;
 }
 
 .message .user {
@@ -114,6 +116,7 @@ li {
     word-break: break-word;
     max-width: 100%;
     padding: 2px 0;
+    overflow-wrap: break-word;
 }
 
 /* Form styles */
@@ -161,4 +164,31 @@ input[type="submit"]:hover {
     resize: vertical;
     font-family: inherit;
     font-size: inherit;
+}
+
+/* Chat controls styles */
+.chat-controls {
+    margin-bottom: 10px;
+    padding: 5px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+}
+
+.connection-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.connection-toggle label {
+    font-size: 14px;
+    color: #555;
+}
+
+.connection-toggle select {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 14px;
 } 

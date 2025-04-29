@@ -31,13 +31,24 @@ function updateChatBox(messages) {
         
         const msgContentSpan = document.createElement('span');
         msgContentSpan.className = 'msg-content';
+        
+        // Properly escape HTML and handle special characters
+        const escapedContent = messageContent
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+            
         // Replace newlines with <br> and preserve tabs/spaces
-        msgContentSpan.innerHTML = messageContent
+        msgContentSpan.innerHTML = escapedContent
             .replace(/\n/g, '<br>')
             .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
             .replace(/ {2}/g, '&nbsp;&nbsp;');
+            
         // Apply CSS to preserve whitespace
         msgContentSpan.style.whiteSpace = 'pre-wrap';
+        msgContentSpan.style.wordBreak = 'break-word';
         
         const timeSpan = document.createElement('span');
         timeSpan.className = 'time';
@@ -115,18 +126,39 @@ function sendMessage() {
     .catch(error => console.error('Error sending message:', error));
 }
 
-// Event listeners
-document.addEventListener('DOMContentLoaded', () => {
-    // Clear chat box
-    const chatBox = document.getElementById('chatBox');
-    chatBox.innerHTML = '';
+// Variables to track connection state
+let eventSource = null;
+let pollingInterval = null;
+let lastMessageCount = 0;
+
+// Function to start SSE connection
+function startSSE() {
+    // Clear any existing connections
+    stopConnection();
+    
+    // Check if SSE is supported
+    if (typeof(EventSource) === "undefined") {
+        console.error("SSE is not supported in this browser. Switching to polling.");
+        document.getElementById('connection-type').value = 'polling';
+        startPolling();
+        return;
+    }
+    
+    console.log("Starting SSE connection...");
     
     // Set up SSE connection
-    const eventSource = new EventSource('/chat/stream');
+    eventSource = new EventSource('/chat/stream');
     
     eventSource.onmessage = (event) => {
         console.log('Received SSE data:', event.data);
-        updateChatBox(event.data);
+        try {
+            // Parse the data as JSON
+            const data = JSON.parse(event.data);
+            console.log('Parsed SSE data:', data);
+            updateChatBox(data);
+        } catch (error) {
+            console.error('Error parsing SSE data:', error, event.data);
+        }
     };
     
     eventSource.onerror = (error) => {
@@ -134,9 +166,83 @@ document.addEventListener('DOMContentLoaded', () => {
         eventSource.close();
         // Try to reconnect after 5 seconds
         setTimeout(() => {
-            window.location.reload();
+            console.log('Attempting to reconnect SSE...');
+            startSSE();
         }, 5000);
     };
+}
+
+// Function to start long polling
+function startPolling() {
+    // Clear any existing connections
+    stopConnection();
+    
+    console.log("Starting long polling...");
+    
+    // Function to poll for new messages
+    function poll() {
+        fetch(`/chat/poll?last_id=${lastMessageCount}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    console.log('Received polling data:', data);
+                    updateChatBox(data);
+                    lastMessageCount = data.length;
+                }
+                // Continue polling
+                pollingInterval = setTimeout(poll, 1000);
+            })
+            .catch(error => {
+                console.error('Polling error:', error);
+                // Try to reconnect after 5 seconds
+                setTimeout(() => {
+                    console.log('Attempting to reconnect polling...');
+                    startPolling();
+                }, 5000);
+            });
+    }
+    
+    // Start polling
+    poll();
+}
+
+// Function to stop any active connection
+function stopConnection() {
+    if (eventSource) {
+        eventSource.close();
+        eventSource = null;
+    }
+    
+    if (pollingInterval) {
+        clearTimeout(pollingInterval);
+        pollingInterval = null;
+    }
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    // Clear chat box
+    const chatBox = document.getElementById('chatBox');
+    chatBox.innerHTML = '';
+    
+    // Connection type selector
+    const connectionType = document.getElementById('connection-type');
+    
+    // Initial connection based on selected type
+    if (connectionType.value === 'sse') {
+        startSSE();
+    } else {
+        startPolling();
+    }
+    
+    // Handle connection type changes
+    connectionType.addEventListener('change', () => {
+        if (connectionType.value === 'sse') {
+            startSSE();
+        } else {
+            startPolling();
+        }
+    });
     
     // Send button click handler
     document.getElementById('sendButton').addEventListener('click', sendMessage);
